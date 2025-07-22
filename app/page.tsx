@@ -1,7 +1,16 @@
+import Navbar from "@/components/nav/navbar";
+
+import { Separator } from "@/components/ui/separator";
+
 export default function Home() {
   return (
-    <>
-      <h1>Hello</h1>
-    </>
+    <div>
+      {/* nav */}
+      <Navbar />
+      <Separator className="mt-4" />
+
+      {/* content */}
+      <div></div>
+    </div>
   );
 }
