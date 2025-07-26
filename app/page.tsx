@@ -1,16 +1,5 @@
-import Navbar from "@/components/nav/navbar";
+import { TimerPanel } from "@/components/timer/components/timer-panel";
 
-import { Separator } from "@/components/ui/separator";
-
-export default function Home() {
-  return (
-    <div>
-      {/* nav */}
-      <Navbar />
-      <Separator className="mt-4" />
-
-      {/* content */}
-      <div></div>
-    </div>
-  );
+export default function page() {
+  return <TimerPanel />;
 }
