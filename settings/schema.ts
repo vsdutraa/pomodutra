@@ -1,6 +1,6 @@
-import { Alert, Durations } from "@/types/pomodoro";
+// import { Alert, Durations } from "@/types/pomodoro";
 
-export type SettingsSchema = {
-  alert: Alert;
-  durations: Durations;
-};
+// export type SettingsSchema = {
+//   alert: Alert;
+//   durations: Durations;
+// };

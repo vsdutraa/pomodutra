@@ -5,19 +5,16 @@ export const metadata: Metadata = {
 };
 
 // fonts
-import { Montserrat } from "next/font/google";
+import { Poppins } from "next/font/google";
 
-const montserrat = Montserrat({
+const poppins = Poppins({
   subsets: ["latin"],
-  weight: ["500", "700", "900"],
+  weight: ["300", "500", "700", "900"],
 });
 
 // css
 import "@/app/globals.css";
 import { cn } from "@/lib/utils";
-
-// components
-import { Navbar } from "@/components/navbar/navbar";
 
 export default function RootLayout({
   children,
@@ -25,11 +22,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={cn(montserrat.className, "antialiased")}>
+    <html lang="en" className={cn(poppins.className, "antialiased")}>
       <body>
         <main className="mx-auto min-h-screen w-full max-w-[600px] px-4 py-4">
-          <Navbar />
-
           {children}
         </main>
       </body>

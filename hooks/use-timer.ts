@@ -1,40 +1,64 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 
 type UseTimerOptions = {
-  duration: number;
-  onComplete?: () => void;
+  initialTime: number;
+  onExpire?: () => void;
 };
 
-export const useTimer = ({ duration, onComplete }: UseTimerOptions) => {
-  const [time, setTime] = useState(duration);
+export const useTimer = ({ initialTime, onExpire }: UseTimerOptions) => {
+  const [secondsLeft, setSecondsLeft] = useState(initialTime);
   const [isRunning, setIsRunning] = useState(false);
+  const [expired, setExpired] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-  const tick = useCallback(() => {
-    timerRef.current = setTimeout(() => {
-      setTime((prev) => {
-        if (prev <= 1) {
-          setIsRunning(false);
-          onComplete?.();
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-  }, [onComplete]);
+  // tick
+  useEffect(() => {
+    if (isRunning) {
+      timerRef.current = setInterval(() => {
+        setSecondsLeft((prev) => {
+          if (prev <= 1) {
+            setIsRunning(false);
+            setExpired(true);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+    return () => {
+      clearInterval(timerRef.current!);
+    };
+  }, [isRunning]);
 
   useEffect(() => {
-    if (isRunning) tick();
-    return () => clearTimeout(timerRef.current!);
-  }, [isRunning, tick]);
+    setSecondsLeft(initialTime);
+  }, [initialTime]);
 
-  const start = () => setIsRunning(true);
-  const pause = () => setIsRunning(false);
-  const reset = (newDuration = duration) => {
-    clearTimeout(timerRef.current!);
-    setTime(newDuration);
+  useEffect(() => {
+    if (expired) {
+      onExpire?.();
+      setExpired(false);
+    }
+  }, [expired]);
+
+  const start = useCallback(() => {
+    setIsRunning(true);
+  }, []);
+
+  const pause = useCallback(() => {
     setIsRunning(false);
-  };
+  }, []);
 
-  return { time, isRunning, start, pause, reset };
+  const reset = useCallback((t: number) => {
+    setSecondsLeft(t);
+    setIsRunning(false);
+  }, []);
+
+  return {
+    secondsLeft,
+    isRunning,
+    start,
+    pause,
+    reset,
+  };
 };

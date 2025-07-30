@@ -1,54 +1,39 @@
-import { useEffect } from "react";
+import { useState, useCallback } from "react";
 
-import { PomodoroMode, pomodoroModes } from "@/types/pomodoro";
+import { Mode, Settings } from "@/types";
 
-import { useTimer } from "@/hooks/use-timer";
-import { useAlert } from "@/hooks/use-alert";
+export const usePomodoro = (settings: Settings) => {
+  const { durations, longBreakInterval } = settings;
 
-import { SettingsSchema } from "@/settings/schema";
+  const [mode, setMode] = useState<Mode>("focus");
+  console.log("Current mode: ", mode);
 
-type UsePomodoroOptions = {
-  mode: PomodoroMode;
-  setMode: (mode: PomodoroMode) => void;
-  settings: SettingsSchema;
-};
+  const currentDuration = durations[mode];
 
-export const usePomodoro = ({
-  mode,
-  setMode,
-  settings,
-}: UsePomodoroOptions) => {
-  const { durations, alert } = settings;
+  const [streak, setStreak] = useState(1);
 
-  const { play } = useAlert(alert);
+  const handleExpire = useCallback(() => {
+    if (mode === "focus") {
+      const newStreak = streak + 1;
+      setStreak(newStreak);
 
-  const advanceMode = () => {
-    const index = pomodoroModes.indexOf(mode);
-    const nextIndex = (index + 1) % pomodoroModes.length;
-    setMode(pomodoroModes[nextIndex]);
-  };
+      const nextMode =
+        streak > 0 && streak % longBreakInterval === 0
+          ? "longBreak"
+          : "shortBreak";
 
-  const duration = durations[mode];
-
-  const { time, isRunning, start, pause, reset } = useTimer({
-    duration,
-    onComplete: () => {
-      play();
-      advanceMode();
-    },
-  });
-
-  useEffect(() => {
-    reset(duration);
-  }, [mode, durations]);
+      setMode(nextMode);
+    } else {
+      setMode("focus");
+    }
+  }, [mode, streak]);
 
   return {
     mode,
     setMode,
-    time,
-    isRunning,
-    start,
-    pause,
-    reset,
+    currentDuration,
+    handleExpire,
+    streak,
+    // setStreak,
   };
 };
